@@ -1,9 +1,10 @@
-# 
+# directory
 node_modules/
 build/
 .vscode/
+coverage/
 
-#
+# file
 package-lock.json
 
 # Misc
