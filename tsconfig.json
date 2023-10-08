@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "rootDir": ".",
+    "outDir": "build",
+    // "types": [ "node", "jest" ],
+    "types": [ "node" ],
+    "lib": [ "es5", "dom" ],
+    /* "target": "es2022",
+    "module": "node16",
+    "lib": ["ES2022"],
+    "moduleResolution": "node16",
+    "rootDir": ".",
+    "outDir": "build",
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
+    "alwaysStrict": true,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false */
+  },
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules",]
+}
