@@ -2,7 +2,7 @@
   "name": "k-rpc-ts",
   "version": "0.0.1",
   "description": "",
-  "type": "module",
+  "type": "commonjs",
   "keywords": [],
   "author": "",
   "license": "MIT",
@@ -23,7 +23,9 @@
     "chrome-dns": "1.0.1",
     "chrome-net": "3.3.4",
     "debug": "4.3.4",
-    "randombytes": "2.1.0"
+    "queue-microtask": "1.2.3",
+    "randombytes": "2.1.0",
+    "yargs": "17.7.2"
   },
   "devDependencies": {
     "@types/jest": "29.5.5",

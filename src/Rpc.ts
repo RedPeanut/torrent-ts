@@ -1,9 +1,9 @@
-const Socket = require('./Socket')
-const KBucket = require('./KBucket')
-const { EventEmitter } = require('events')
-const randombytes = require('randombytes')
-// const util = require('util')
-const debug = require('debug')('k-rpc')
+const Socket = require('./Socket');
+const KBucket = require('./KBucket');
+const { EventEmitter } = require('events');
+const randombytes = require('randombytes');
+// const util = require('util');
+const debug = require('debug')('k-rpc');
 debug.log = console.log.bind(console);
 
 const K = 20;

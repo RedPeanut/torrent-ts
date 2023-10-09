@@ -1,10 +1,17 @@
-const { EventEmitter } = require('events')
+const { EventEmitter } = require('events');
 const dgram = require('dgram');
 const bencode = require('bencode');
 const isIP = require('net').isIP;
 const dns = require('dns');
 const util = require('util');
 const events = require('events');
+// import { EventEmitter } from 'events';
+// import * as dgram from 'dgram';
+// import bencode from 'bencode';
+// import { isIP } from 'net';
+// import * as dns from 'dns';
+// import * as util from 'util';
+// import * as events from 'events';
 const debug = require('debug')('k-rpc-socket');
 debug.log = console.log.bind(console);
 
@@ -24,26 +31,28 @@ interface Options {
   socket: any;
 }
 
-export default class Socket extends EventEmitter {
+class Socket extends EventEmitter {
 
   timeout: number;
   inflight: number;
   destroyed: boolean;
-  isIP: boolean;
-  socket: any; //typeof socket;
+  // isIP: boolean;
+  isIP: Function;
+  // socket: typeof Socket;
+  socket: any;
 
   _tick: number;
-  /* _ids: [number] = [];
-  _reqs: [{
-    ttl: number,
-    peer: {
-      host: string,
-      port: number,
-      id: Buffer
-    },
-    callback: Function,
-    message: string
-  }] = []; */
+  // _ids: typeof Array<number> = new Array<number>();
+  // _reqs: [{
+  //   ttl: number,
+  //   peer: {
+  //     host: string,
+  //     port: number,
+  //     id: Buffer
+  //   },
+  //   callback: Function,
+  //   message: string
+  // }] = [];
   // _ids: [any];
   // _reqs: [any];
   // _ids: [];
@@ -271,4 +280,4 @@ export default class Socket extends EventEmitter {
   noop = function() {}
 }
 
-
+module.exports = Socket;

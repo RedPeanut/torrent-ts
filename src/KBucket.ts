@@ -28,11 +28,17 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 'use strict'
 
-// const debug = require('debug')('k-bucket')
-const randomBytes = require('randombytes')
-const { EventEmitter } = require('events')
-const { inspect } = require('node:util')
-const debug = require('debug')('k-bucket')
+// const randomBytes = require('randombytes');
+// const { EventEmitter } = require('events');
+// const { inspect } = require('node:util');
+// const debug = require('debug')('k-bucket');
+import randomBytes from 'randombytes';
+import { EventEmitter } from 'events';
+import { inspect } from 'node:util';
+// const debug = require('debug')('k-bucket');
+// import debug from 'debug'('k-bucket');
+import _debug from 'debug';
+const debug = _debug('k-bucket');
 
 /**
  * @param  {Uint8Array} array1
@@ -80,6 +86,15 @@ interface Options {
  * @extends EventEmitter
  */
 class KBucket extends EventEmitter {
+
+  localNodeId;
+  numberOfNodesPerKBucket;
+  numberOfNodesToPing;
+  distance;
+  arbiter;
+  metadata;
+  root;
+
   /**
    * `options`:
    *   `distance`: _Function_
