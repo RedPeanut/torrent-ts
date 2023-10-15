@@ -64,7 +64,7 @@ function createNode() {
   return { contacts: [], dontSplit: false, left: null, right: null }
 }
 
-function ensureInt8 (name, val) {
+function ensureInt8(name, val) {
   if(!(val instanceof Uint8Array)) {
     throw new TypeError(name + ' is not a Uint8Array')
   }
@@ -122,22 +122,22 @@ class KBucket extends EventEmitter {
    * @param {Object=} options optional
    */
   constructor(options:Options) {
-    super()
+    super();
 
-    // debug('ctor is called..., options.localNodeId = ', options.localNodeId)
-    // console.trace()
+    // debug('ctor is called..., options.localNodeId = ', options.localNodeId);
+    // console.trace();
 
-    this.localNodeId = options.localNodeId || randomBytes(20)
-    this.numberOfNodesPerKBucket = options.numberOfNodesPerKBucket || 20
-    this.numberOfNodesToPing = options.numberOfNodesToPing || 3
-    this.distance = options.distance || KBucket.distance
+    this.localNodeId = options.localNodeId || randomBytes(20);
+    this.numberOfNodesPerKBucket = options.numberOfNodesPerKBucket || 20;
+    this.numberOfNodesToPing = options.numberOfNodesToPing || 3;
+    this.distance = options.distance || KBucket.distance;
     // use an arbiter from options or vectorClock arbiter by default
-    this.arbiter = options.arbiter || KBucket.arbiter
-    this.metadata = Object.assign({}, options.metadata)
+    this.arbiter = options.arbiter || KBucket.arbiter;
+    this.metadata = Object.assign({}, options.metadata);
 
-    ensureInt8('option.localNodeId as parameter 1', this.localNodeId)
+    ensureInt8('option.localNodeId as parameter 1', this.localNodeId);
 
-    this.root = createNode()
+    this.root = createNode();
   }
 
   /**
@@ -151,7 +151,7 @@ class KBucket extends EventEmitter {
    * @return {Object}           Contact to updated the k-bucket with.
    */
   static arbiter(incumbent, candidate) {
-    return incumbent.vectorClock > candidate.vectorClock ? incumbent : candidate
+    return incumbent.vectorClock > candidate.vectorClock ? incumbent : candidate;
   }
 
   /**
@@ -164,15 +164,15 @@ class KBucket extends EventEmitter {
    *                               and secondId.
    */
   static distance(firstId, secondId) {
-    let distance = 0
-    let i = 0
-    const min = Math.min(firstId.length, secondId.length)
-    const max = Math.max(firstId.length, secondId.length)
+    let distance = 0;
+    let i = 0;
+    const min = Math.min(firstId.length, secondId.length);
+    const max = Math.max(firstId.length, secondId.length);
     for(; i < min; ++i) {
-      distance = distance * 256 + (firstId[i] ^ secondId[i])
+      distance = distance * 256 + (firstId[i] ^ secondId[i]);
     }
-    for(; i < max; ++i) distance = distance * 256 + 255
-    return distance
+    for(; i < max; ++i) distance = distance * 256 + 255;
+    return distance;
   }
 
   /**

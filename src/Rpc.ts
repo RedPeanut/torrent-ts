@@ -69,7 +69,7 @@ export default class Rpc extends EventEmitter {
 
     this.idLength = opts.idLength || 20;
     this.id = toBuffer(opts.id || opts.nodeId || randombytes(this.idLength));
-    this.socket = opts.krpcSocket || new Socket.default(opts);
+    this.socket = opts.krpcSocket || new Socket(opts);
     this.bootstrap_nodes = toBootstrapArray(opts.nodes || opts.bootstrap_nodes);
     this.bootstrapped = false;
     this.concurrency = opts.concurrency || MAX_CONCURRENCY;
@@ -188,21 +188,21 @@ export default class Rpc extends EventEmitter {
   }
   
   clear = function() {
-    let self = this
+    let self = this;
   
     /* this.table =  */this.nodes = new KBucket({
       localNodeId: this.id,
       numberOfNodesPerKBucket: this.k,
       numberOfNodesToPing: this.concurrency
-    })
+    });
   
-    this.nodes.on('ping', onping)
+    this.nodes.on('ping', onping);
   
     function onping(older, newer) {
       self.emit('ping', older, function swap(deadNode) {
-        if(!deadNode) return
-        if(deadNode.id) self.nodes.remove(deadNode.id)
-        self._addNode(newer)
+        if(!deadNode) return;
+        if(deadNode.id) self.nodes.remove(deadNode.id);
+        self._addNode(newer);
       })
     }
   }
