@@ -1,9 +1,21 @@
-const Socket = require('./Socket');
-const KBucket = require('./KBucket');
-const { EventEmitter } = require('events');
-const randombytes = require('randombytes');
+// const Socket = require('./Socket');
+// const KBucket = require('./KBucket');
+// const { EventEmitter } = require('events');
+// const randombytes = require('randombytes');
+// // const util = require('util');
+// const debug = require('debug')('k-rpc');
+// debug.log = console.log.bind(console);
+import { Socket } from './Socket';
+import { KBucket } from './KBucket';
+import { EventEmitter } from 'events';
+import randombytes from 'randombytes';
+import { Contact,
+  flag_initial,
+  flag_queried,
+} from './Types';
 // const util = require('util');
-const debug = require('debug')('k-rpc');
+import _debug from 'debug';
+const debug = _debug('k-rpc');
 debug.log = console.log.bind(console);
 
 const K = 20;
@@ -20,15 +32,15 @@ interface Node {
 }
 
 interface Options {
-  idLength: number,
-  id: Buffer,
-  nodeId: Buffer,
-  krpcSocket: typeof Socket,
-  nodes: [],
-  bootstrap_nodes: [],
-  concurrency: number,
-  backgroundConcurrency: number,
-  k: number,
+  idLength?: number,
+  id?: Buffer,
+  nodeId?: Buffer,
+  krpcSocket?: typeof Socket,
+  nodes?: [],
+  bootstrap_nodes?: [],
+  concurrency?: number,
+  backgroundConcurrency?: number,
+  k?: number,
 }
 
 /**
@@ -37,18 +49,32 @@ interface Options {
  */
 export default class Rpc extends EventEmitter {
 
-  idLength: number;
-  id: Buffer;
-  socket: typeof Socket;
-  bootstrap_nodes: Node[];
-  concurrency: number;
-  backgroundConcurrency: number;
-  k: number;
-  destroyed: boolean;
+  idLength;
+  id;
+  socket;
+  bootstrap_nodes;
+  bootstrapped;
+  concurrency;
+  backgroundConcurrency;
+  k;
+  destroyed;
 
-  pending: [] = [];
-  nodes: typeof KBucket;
-  // table: typeof KBucket;
+  pending;
+  nodes;
+
+  // idLength: number;
+  // id: Buffer;
+  // socket: typeof Socket;
+  // bootstrap_nodes: Node[];
+  // bootstrapped;
+  // concurrency: number;
+  // backgroundConcurrency: number;
+  // k: number;
+  // destroyed: boolean;
+
+  // pending: [] = [];
+  // nodes: typeof KBucket;
+  // // table: typeof KBucket;
 
   constructor(opts: Options/* = {
     idLength: 0,
@@ -69,7 +95,8 @@ export default class Rpc extends EventEmitter {
 
     this.idLength = opts.idLength || 20;
     this.id = toBuffer(opts.id || opts.nodeId || randombytes(this.idLength));
-    this.socket = opts.krpcSocket || new Socket(opts);
+    // this.socket = opts.krpcSocket || new Socket(opts);
+    this.socket = opts.krpcSocket || new Socket({});
     this.bootstrap_nodes = toBootstrapArray(opts.nodes || opts.bootstrap_nodes);
     this.bootstrapped = false;
     this.concurrency = opts.concurrency || MAX_CONCURRENCY;

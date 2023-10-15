@@ -71,12 +71,12 @@ function ensureInt8(name, val) {
 }
 
 interface Options {
-  localNodeId: string;
-  numberOfNodesPerKBucket: number;
-  numberOfNodesToPing: number;
-  distance: number;
-  arbiter: Function;
-  metadata: {};
+  localNodeId?: string;
+  numberOfNodesPerKBucket?: number;
+  numberOfNodesToPing?: number;
+  distance?: number;
+  arbiter?: Function;
+  metadata?: {};
 }
 
 /**
@@ -85,7 +85,7 @@ interface Options {
  *
  * @extends EventEmitter
  */
-class KBucket extends EventEmitter {
+export class KBucket extends EventEmitter {
 
   localNodeId;
   numberOfNodesPerKBucket;
@@ -488,4 +488,4 @@ class KBucket extends EventEmitter {
   }
 }
 
-module.exports = KBucket
+// module.exports = KBucket

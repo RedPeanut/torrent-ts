@@ -1,18 +1,20 @@
-const { EventEmitter } = require('events');
-const dgram = require('dgram');
-const bencode = require('bencode');
-const isIP = require('net').isIP;
-const dns = require('dns');
-const util = require('util');
-const events = require('events');
-// import { EventEmitter } from 'events';
-// import * as dgram from 'dgram';
-// import bencode from 'bencode';
-// import { isIP } from 'net';
-// import * as dns from 'dns';
-// import * as util from 'util';
-// import * as events from 'events';
-const debug = require('debug')('k-rpc-socket');
+// const { EventEmitter } = require('events');
+// const dgram = require('dgram');
+// const bencode = require('bencode');
+// const isIP = require('net').isIP;
+// const dns = require('dns');
+// const util = require('util');
+// const events = require('events');
+import { EventEmitter } from 'events';
+import * as dgram from 'dgram';
+import * as bencode from 'bencode';
+import { isIP } from 'net';
+import * as dns from 'dns';
+import * as util from 'util';
+import * as events from 'events';
+// const debug = require('debug')('k-rpc-socket');
+import _debug from 'debug';
+const debug = _debug('k-rpc-socket');
 debug.log = console.log.bind(console);
 
 class MyError extends Error {
@@ -26,12 +28,12 @@ const EUNEXPECTEDNODE = new MyError('Unexpected node id');
 EUNEXPECTEDNODE.code = 'EUNEXPECTEDNODE';
 
 interface Options {
-  timeout: number;
-  isIP: boolean;
-  socket: any;
+  timeout?: number;
+  isIP?: Function;
+  socket?: typeof dgram.Socket;
 }
 
-class Socket extends EventEmitter {
+export class Socket extends EventEmitter {
 
   timeout: number;
   inflight: number;
@@ -57,6 +59,8 @@ class Socket extends EventEmitter {
   // _reqs: [any];
   // _ids: [];
   // _reqs: [];
+  _ids;
+  _reqs;
   _timer: NodeJS.Timer;
 
   constructor(opts: Options) {
@@ -280,4 +284,4 @@ class Socket extends EventEmitter {
   noop = function() {}
 }
 
-module.exports = Socket;
+// module.exports = Socket;
