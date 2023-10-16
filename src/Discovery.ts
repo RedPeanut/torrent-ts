@@ -1,8 +1,8 @@
 import {EventEmitter} from 'events';
 
-class Discovery extends EventEmitter {
+export default class Discovery extends EventEmitter {
   constructor(opts) {
     super();
   }
 }
-module.exports = Discovery;
+// module.exports = Discovery;

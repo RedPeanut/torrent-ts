@@ -33,7 +33,7 @@ interface Options {
   socket?: typeof dgram.Socket;
 }
 
-export class Socket extends EventEmitter {
+export default class Socket extends EventEmitter {
 
   timeout: number;
   inflight: number;
