@@ -13,6 +13,10 @@ export default class DHT extends EventEmitter {
     
   }
 
+  lookup() {
+    
+  }
+
 }
 
 // module.exports = DHT;
