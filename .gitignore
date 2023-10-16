@@ -1,7 +1,6 @@
 # directory
 node_modules/
 build/
-.vscode/
 coverage/
 
 # file
