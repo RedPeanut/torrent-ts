@@ -1,11 +1,11 @@
 const magnet = require('magnet-uri');
-const rpc = require('../src/Rpc');
+const Rpc = require('../src/Rpc');
 
 class TestRpc {
   run(args: []): void {
     // console.log('krpc =', krpc);
     // const rpc = new krpc.default({});
-    const _rpc = new rpc.default({});
+    const _rpc = new Rpc({});
     // const debug = require('debug')('k-rpc-ts')
 
     const captain = 'magnet:?xt=urn:btih:2ae7f9a05790e713f7c753af931e32d138ce2a61'; // 캡틴아메리카 윈터솔져
@@ -44,8 +44,9 @@ class TestRpc {
       then = Date.now();
 
       // get_peers
-      _rpc.getPeers(target, { q: 'get_peers', a: { info_hash: target } }, visit, function (err, numberOfReplies) {
-        console.log('(get_peers)', Date.now() - then, 'ms, count:', numberOfReplies);
+      _rpc.getPeers(target, { q: 'get_peers', a: { info_hash: target } }, visit, function(err, numberOfReplies) {
+        // console.trace();
+        console.log('(get_peers)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
         console.log(require('util').inspect(_rpc.nodes.root, false, null))
         _rpc.destroy(() => {
           console.log('destroy callback is called...');
