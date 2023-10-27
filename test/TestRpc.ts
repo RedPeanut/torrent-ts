@@ -5,7 +5,7 @@ class TestRpc {
   run(args: []): void {
     // console.log('krpc =', krpc);
     // const rpc = new krpc.default({});
-    const _rpc = new Rpc({});
+    const _rpc = new Rpc.default({});
     // const debug = require('debug')('k-rpc-ts')
 
     const captain = 'magnet:?xt=urn:btih:2ae7f9a05790e713f7c753af931e32d138ce2a61'; // 캡틴아메리카 윈터솔져
@@ -15,7 +15,7 @@ class TestRpc {
     _rpc.on('query', function(query, peer) {
       // console.log(query, peer);
       // console.trace();
-      if (query.q === undefined || query.q === null) return;
+      if(query.q === undefined || query.q === null) return;
       const q = query.q.toString();
       console.log('received %s query from %s:%d', q, peer.address, peer.port);
     });
@@ -32,8 +32,8 @@ class TestRpc {
     let then = Date.now();
 
     // TODO: get_peers with bootstrap node
-    // _rpc.bootstrap(_rpc.id, { q: 'get_peers', a: { info_hash: target } }, function(_, n) {
-    _rpc.bootstrap(_rpc.id, { q: 'find_node', a: { id: _rpc.id, target: target } }, function(err, numberOfReplies) {
+    _rpc.bootstrap(_rpc.id, { q: 'get_peers', a: { id: _rpc.id, info_hash: target } }, function(err, numberOfReplies) {
+    // _rpc.bootstrap(_rpc.id, { q: 'find_node', a: { id: _rpc.id, target: target } }, function(err, numberOfReplies) {
       console.log('(bootstrapped)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
       // console.log(require('util').inspect(_rpc.nodes.root, false, null))
 
@@ -44,10 +44,12 @@ class TestRpc {
       then = Date.now();
 
       // get_peers
-      _rpc.getPeers(target, { q: 'get_peers', a: { info_hash: target } }, visit, function(err, numberOfReplies) {
+      _rpc.getPeers(target, { q: 'get_peers', a: { id: _rpc.id, info_hash: target } }, visit, function(err, numberOfReplies) {
         // console.trace();
         console.log('(get_peers)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
-        console.log(require('util').inspect(_rpc.nodes.root, false, null))
+        // console.log(require('util').inspect(_rpc.nodes.root, false, null))
+        let get = _rpc.nodes.get(target);
+        console.log('get =', get);
         _rpc.destroy(() => {
           console.log('destroy callback is called...');
         });
@@ -56,23 +58,34 @@ class TestRpc {
 
     function visit(res, peer) {
       console.log('visit() is called...');
+      // console.log('res =', res, ', peer =', peer);
+      // let type = res && res.y && res.y.toString();
+      // let transactionId = res && res.t && res.t.toString();
+      // console.log('type =', type, ', transactionId =', transactionId);
+
       let peers = res.r.values ? parsePeers(res.r.values) : [];
-      if (peers.length) console.log('count peers:', peers.length);
+      // let peers = res.r.nodes ? parsePeers(res.r.nodes) : [];
+      // console.log('peers.length =', peers.length);
+      if(peers.length)
+        console.log('count peers:', peers.length);
     }
 
     function parsePeers(buf) {
-      let peers : {host:string,port:number}[] = [];
-
+      // console.log('parsePeers() is called...');
+      let peers = []; //: {host:string,port:number}[] = [];
+      // console.log('buf.length =', buf.length);
       try {
-        for (let i = 0; i < buf.length; i++) {
+        for(let i = 0; i < buf.length; i++) {
           let port = buf[i].readUInt16BE(4);
-          if (!port) continue;
+          console.log(`[${i}] port =`, port);
+          if(!port) continue;
           peers.push({
             host: parseIp(buf[i], 0),
             port: port
           });
         }
       } catch(err) {
+        console.log('err =', err);
         // do nothing
       }
 

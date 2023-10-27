@@ -1,74 +1,58 @@
-const socket = require('../src/Socket');
+import * as dgram from 'dgram';
+import * as bencode from 'bencode';
 
 class TestSocket {
 
   constructor() {}
 
-  run(args: []): void { 
-    console.log('main() is called...');
-    let _socket = new socket.default({});
-    // socket.bind(0, function() {
-    //   let port = socket.address().port;
-    // });
-    _socket.setMaxListeners(0);
-    _socket.on('query', onquery);
-    _socket.on('response', onresponse);
-    // _socket.on('message', _onmessage);
-    _socket.on('warning', onwarning);
-    _socket.on('error', _onerror);
-    _socket.on('update', onupdate);
-    _socket.on('listening', onlistening);
-
-    function onupdate() {
-      console.log('onupdate() is called...');
-    }
+  main(args: []): void {
+    let socket = dgram.createSocket('udp4');
+    socket.on('message', _onmessage);
+    socket.on('error', _onerror);
+    socket.on('listening', onlistening);
 
     function _onerror(err) {
-      console.log('onerror() is called...');
+      console.log('_onerror() is called...');
     }
 
     function onlistening() {
       console.log('onlistening() is called...');
     }
 
-    function onwarning(err) {
-      console.log('onwarning() is called...');
+    function _onmessage(buf, rinfo) {
+      console.log('_onmessage() is called...');
+      let message = bencode.decode(buf);
+      let type = message && message.y && message.y.toString();
+      console.log('type =', type);
+      if(type === 'r' || type === 'e') { // 
+      } else if(type === 'q') { // 
+      } else { // 
+      }
     }
 
-    function onquery(query, peer) {
-      console.log('onquery() is called...');
+    function query(peer, query, cb) {
+      let message = {
+        t: Buffer.allocUnsafe(2),
+        y: 'q',
+        q: query.q,
+        a: query.a
+      }
+      send(peer, message);
     }
 
-    function onresponse(reply, peer) {
-      console.log('onresponse() is called...');
+    function send(peer, message, cb?) {
+      let buf = bencode.encode(message);
+      this.socket.send(buf, 0, buf.length, peer.port, peer.address || peer.host, cb || noop);
     }
 
-    // function _onmessage(reply, peer) {
-    //   console.log('onmessage() is called...');
-    // }
+    function noop() {}
 
-    const BOOTSTRAP_NODES = [
-      { host: 'router.bittorrent.com', port: 6881 },
-      { host: 'router.utorrent.com', port: 6881 },
-      { host: 'dht.transmissionbt.com', port: 6881 }
-    ];
+    
 
-    const randombytes = require('randombytes');
-    const id = randombytes(20);
-
-    function cb(err, res, peer) {
-      console.log('cb() is called...');
-      console.log('err =', err);
-      console.log('res =', res);
-      console.log('peer =', peer);
-    }
-
-    _socket.query({ host: 'router.bittorrent.com', port: 6881 }, { q: 'find_node', a: { id: id, target: id } }, cb);
-    _socket.query({ host: 'router.utorrent.com', port: 6881 }, { q: 'find_node', a: { id: id, target: id } }, cb);
-    _socket.query({ host: 'dht.transmissionbt.com', port: 6881 }, { q: 'find_node', a: { id: id, target: id } }, cb);
   }
+
 }
 
-new TestSocket().run([]);
+new TestSocket().main([]);
 
 
