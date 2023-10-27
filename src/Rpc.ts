@@ -5,7 +5,7 @@
 // // const util = require('util');
 // const debug = require('debug')('k-rpc');
 // debug.log = console.log.bind(console);
-import { Socket } from './Socket';
+import Socket from './Socket';
 import { KBucket } from './KBucket';
 import { EventEmitter } from 'events';
 import randombytes from 'randombytes';
@@ -26,11 +26,6 @@ const BOOTSTRAP_NODES = [
   { host: 'dht.transmissionbt.com', port: 6881 }
 ];
 
-interface Node {
-  host: string;
-  port: number;
-}
-
 interface Options {
   idLength?: number,
   id?: Buffer,
@@ -44,7 +39,7 @@ interface Options {
 }
 
 /**
- * RPC(Remote Procedure Call) 클래스의 목적은? 목표는?
+ * RPC(Remote Procedure Call)의 목적 또는 목표, 의미 파악하기
  * 
  */
 export default class Rpc extends EventEmitter {

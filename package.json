@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "bencode": "2.0.3",
+    "chalk": "4.1.2",
     "chrome-dgram": "3.0.6",
     "chrome-dns": "1.0.1",
     "chrome-net": "3.3.4",
@@ -27,6 +28,7 @@
     "parse-torrent": "9.1.5",
     "queue-microtask": "1.2.3",
     "randombytes": "2.1.0",
+    "readable-stream": "3.6.2",
     "yargs": "17.7.2"
   },
   "devDependencies": {

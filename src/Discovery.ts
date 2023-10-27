@@ -11,19 +11,19 @@ export default class Discovery extends EventEmitter {
 
   constructor(opts) {
     super();
-    this.dht = this.createDHT();
-    if(this.dht)
-      this._dhtAnnounce();
+    // this.dht = this.createDHT();
+    // if(this.dht)
+    //   this._dhtAnnounce();
   }
 
-  createDHT() {
-    const dht = new DHT();
-    return dht;
-  }
+  // createDHT() {
+  //   const dht = new DHT();
+  //   return dht;
+  // }
 
-  _dhtAnnounce() {
-    this.dht.announce();
-  }
+  // _dhtAnnounce() {
+  //   this.dht.announce();
+  // }
 
 }
 // module.exports = Discovery;

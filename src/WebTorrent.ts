@@ -11,7 +11,7 @@ export default class WebTorrent {
   }
 
   add(torrentId, opts = {}, ontorrent = () => {}) {
-    const torrent = new Torrent(torrentId);
+    const torrent = new Torrent(torrentId, this);
     this.torrents.push(torrent);
     return torrent;
   }

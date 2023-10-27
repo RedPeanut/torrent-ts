@@ -110,7 +110,6 @@ export default class Socket extends EventEmitter {
       if(self.destroyed) return;
       if(!rinfo.port) return; // seems like a node bug that this is nessesary?
   
-      // debug('>>> 1')
       let message;
       try {
         message = bencode.decode(buf);
@@ -118,22 +117,12 @@ export default class Socket extends EventEmitter {
         return self.emit('warning', e);
       }
   
-      // debug('message =', message)
-      // debug('rinfo =', rinfo)
-      // if(message) {
-      //   // if(message.ip) debug('message.ip =', message.ip.toString());
-      //   // if(message.t) debug('message.t =', message.t.toString());
-      //   if(message.y) debug('message.y =', message.y.toString());
-      // }
-  
-      // debug('>>> 2')
       let type = message && message.y && message.y.toString();
       // debug('type =', type);
       if(type === 'r' || type === 'e') {
-        // debug('>>> 2-1');
         if(!Buffer.isBuffer(message.t)) return;
   
-        let tid : number;
+        let tid: number;
         try {
           tid = message.t.readUInt16BE(0);
         } catch(err) {
@@ -225,14 +214,14 @@ export default class Socket extends EventEmitter {
     if(!this.isIP(peer.host))
       return this._resolveAndQuery(peer, query, cb);
   
-    var message = {
+    let message = {
       t: Buffer.allocUnsafe(2),
       y: 'q',
       q: query.q,
       a: query.a
     }
   
-    var req = {
+    let req = {
       ttl: 4, // 2초/4=0.5초
       peer: peer,
       message: message,
@@ -240,9 +229,9 @@ export default class Socket extends EventEmitter {
     }
   
     if(this._tick === 65535) this._tick = 0;
-    var tid = ++this._tick;
+    let tid = ++this._tick;
   
-    var free = this._ids.indexOf(0);
+    let free = this._ids.indexOf(0);
     if(free === -1) free = this._ids.push(0) - 1;
     this._ids[free] = tid;
     while(this._reqs.length < free) this._reqs.push(null);

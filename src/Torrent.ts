@@ -2,21 +2,23 @@
 // const queueMicrotask = require('queue-microtask');
 // const parseTorrent = require('parse-torrent');
 // const Discovery = require('./Discovery');
-
 import { EventEmitter } from 'events';
 import queueMicrotask from 'queue-microtask';
 import parseTorrent from 'parse-torrent';
 import Discovery from './Discovery';
+import WebTorrent from './WebTorrent';
 
 export default class Torrent extends EventEmitter {
 
   destroyed = false;
-  client;
+  client: WebTorrent;
   discovery;
+  infoHash;
+  debugId;
 
-  constructor(torrentId/* , client, opts */) {
+  constructor(torrentId, client: WebTorrent/*, opts */) {
     super();
-    // this.client = client;
+    this.client = client;
     this._onTorrentId(torrentId);
   }
 
@@ -24,10 +26,14 @@ export default class Torrent extends EventEmitter {
     if(this.destroyed) return;
     let parsedTorrent;
     try { parsedTorrent = parseTorrent(torrentId) } catch (err) {}
-    queueMicrotask(() => {
-      if(this.destroyed) return;
-      this._onParsedTorrent(parsedTorrent);
-    });
+    if(parsedTorrent) {
+      this.infoHash = parsedTorrent.infoHash
+      this.debugId = parsedTorrent.infoHash.toString('hex').substring(0, 7)
+      queueMicrotask(() => {
+        if(this.destroyed) return;
+        this._onParsedTorrent(parsedTorrent);
+      });
+    }
   }
 
   _onParsedTorrent(parsedTorrent) {
