@@ -204,6 +204,10 @@ export default class Rpc extends EventEmitter {
     }
   }
   
+  queryAll = function(node, message, visit, cb) {
+    
+  }
+
   destroy = function(cb) {
     this.destroyed = true
     this.socket.destroy(cb)
@@ -286,7 +290,7 @@ export default class Rpc extends EventEmitter {
 
     function done() {
       if(count <= 0) self.bootstrap(target, message, cb);
-      else cb(null, count);
+      else { cb && cb(null, count) };
     }
   }
 
@@ -400,7 +404,7 @@ export default class Rpc extends EventEmitter {
   
 }
 
-function toBootstrapArray(val) : { host: string, port: number }[] {
+function toBootstrapArray(val): { host: string, port: number }[] {
   if(val === false) return []
   if(val === true) return BOOTSTRAP_NODES;
   return [].concat(val || BOOTSTRAP_NODES).map(parsePeer)

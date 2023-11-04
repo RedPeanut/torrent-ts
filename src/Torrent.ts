@@ -10,7 +10,7 @@ import WebTorrent from './WebTorrent';
 
 export default class Torrent extends EventEmitter {
 
-  destroyed = false;
+  destroyed: boolean = false;
   client: WebTorrent;
   discovery;
   infoHash;

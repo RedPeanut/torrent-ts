@@ -4,6 +4,7 @@ import fs from 'fs'
 import chalk from 'chalk'
 import stripIndent from 'common-tags/lib/stripIndent/index.js'
 import WebTorrent from './WebTorrent'
+import Torrent from './Torrent';
 
 const options = {
   advanced: {
@@ -89,16 +90,17 @@ function processInputs(inputs, fn) {
 
 function runDownload(torrentId) {
   console.log('runDownload() is called...');
-  webTorrent = new WebTorrent();
+  webTorrent = new WebTorrent({});
   let torrent = webTorrent.add(torrentId);
   torrent.on('infoHash', () => {});
   torrent.on('metadata', () => {});
   torrent.on('done', () => {});
+  webTorrent.startDiscovery(torrent);
 }
 
 function runDownloadMeta(torrentId) {
   // console.log('argv.out =', argv.out, ', argv.quiet =', argv.quiet);
-  webTorrent = new WebTorrent();
+  webTorrent = new WebTorrent({});
   const torrent = webTorrent.add(torrentId);
   torrent.on('infoHash', function() {
     const torrentFilePath = `${argv.out}/${this.infoHash}.torrent`;
