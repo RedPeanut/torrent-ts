@@ -14,7 +14,6 @@ export default class WebTorrent {
 
   constructor(opts: Options) {
     this.dht = new DHT({});
-
   }
 
   add(torrentId, opts = {}, ontorrent = () => {}) {

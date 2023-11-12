@@ -35,14 +35,7 @@ class TestRpc {
     _rpc.bootstrap(_rpc.id, { q: 'get_peers', a: { id: _rpc.id, info_hash: target } }, function(err, numberOfReplies) {
     // _rpc.bootstrap(_rpc.id, { q: 'find_node', a: { id: _rpc.id, target: target } }, function(err, numberOfReplies) {
       console.log('(bootstrapped)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
-      // console.log(require('util').inspect(_rpc.nodes.root, false, null))
-
-      // _rpc.destroy(() => {
-      //   console.log('destroy callback is called...');
-      // });
-
       then = Date.now();
-
       // get_peers
       _rpc.getPeers(target, { q: 'get_peers', a: { id: _rpc.id, info_hash: target } }, visit, function(err, numberOfReplies) {
         // console.trace();
@@ -57,27 +50,16 @@ class TestRpc {
     });
 
     function visit(res, peer) {
-      console.log('visit() is called...');
-      // console.log('res =', res, ', peer =', peer);
-      // let type = res && res.y && res.y.toString();
-      // let transactionId = res && res.t && res.t.toString();
-      // console.log('type =', type, ', transactionId =', transactionId);
-
       let peers = res.r.values ? parsePeers(res.r.values) : [];
-      // let peers = res.r.nodes ? parsePeers(res.r.nodes) : [];
-      // console.log('peers.length =', peers.length);
       if(peers.length)
         console.log('count peers:', peers.length);
     }
 
     function parsePeers(buf) {
-      // console.log('parsePeers() is called...');
       let peers = []; //: {host:string,port:number}[] = [];
-      // console.log('buf.length =', buf.length);
       try {
         for(let i = 0; i < buf.length; i++) {
           let port = buf[i].readUInt16BE(4);
-          console.log(`[${i}] port =`, port);
           if(!port) continue;
           peers.push({
             host: parseIp(buf[i], 0),

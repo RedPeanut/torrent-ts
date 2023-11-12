@@ -1,5 +1,5 @@
 // const { EventEmitter } = require('events');
-import {EventEmitter} from 'events';
+import { EventEmitter } from 'events';
 import Rpc from './Rpc';
 import Util from './Util';
 const debug = require('debug')('dht');

@@ -113,7 +113,7 @@ export default class Rpc extends EventEmitter {
     this.clear();
 
     function onupdate() {
-      debug('onupdate() is called...');
+      // debug('onupdate() is called...');
       while(self.pending.length && self.socket.inflight < self.concurrency) {
         var next = self.pending.shift();
         self.query(next[0], next[1], next[2]);
@@ -121,28 +121,28 @@ export default class Rpc extends EventEmitter {
     }
 
     function onerror(err) {
-      debug('onerror() is called...');
+      // debug('onerror() is called...');
       self.emit('error', err);
     }
 
     function onlistening() {
-      debug('onlistening() is called...');
+      // debug('onlistening() is called...');
       self.emit('listening')
     }
 
     function onwarning(err) {
-      debug('onwarning() is called...');
+      // debug('onwarning() is called...');
       self.emit('warning', err)
     }
 
     function onquery(query, peer) {
-      debug('onquery() is called...');
+      // debug('onquery() is called...');
       addNode(query.a, peer)
       self.emit('query', query, peer)
     }
 
     function onresponse(reply, peer) {
-      debug('onresponse() is called...');
+      // debug('onresponse() is called...');
       addNode(reply.r, peer)
     }
 
@@ -259,16 +259,16 @@ export default class Rpc extends EventEmitter {
         peer && peer.id && self.nodes.get(peer.id) &&
         err && (err.code === 'EUNEXPECTEDNODE' || err.code === 'ETIMEDOUT')
       ) {
-        debug('bad..');
+        // debug('bad..');
         self.nodes.remove(peer.id);
       } else {
-        debug('ok..');
+        // debug('ok..');
         let r = res && res.r;
         if(!err && isNodeId(r.id, self.idLength)) {
           if(r.id.equals(self.id)) {
             // not add
           } else {
-            debug('good...');
+            // debug('good...');
             count++;
             let nodes = r.nodes ? parseNodes(r.nodes, self.idLength) : [];
             for(let i = 0; i < nodes.length; i++)
@@ -323,7 +323,7 @@ export default class Rpc extends EventEmitter {
 
         let contact = closest[i++];
         let id = contact.host + ':' + contact.port;
-        if (queried[id]) continue;
+        if(queried[id]) continue;
         queried[id] = true;
 
         pending++;
@@ -344,7 +344,7 @@ export default class Rpc extends EventEmitter {
         peer && peer.id && self.nodes.get(peer.id) &&
         err && (err.code === 'EUNEXPECTEDNODE' || err.code === 'ETIMEDOUT')
       ) {
-        debug('bad...');
+        // debug('bad...');
         self.nodes.remove(peer.id);
       } else {
         let r = res && res.r;
@@ -397,78 +397,80 @@ export default class Rpc extends EventEmitter {
   }
 
   _addNode = function(node) {
-    var old = this.nodes.get(node.id)
-    this.nodes.add(node)
-    if(!old) this.emit('node', node)
+    var old = this.nodes.get(node.id);
+    this.nodes.add(node);
+    if(!old) this.emit('node', node);
   }
   
 }
 
 function toBootstrapArray(val): { host: string, port: number }[] {
-  if(val === false) return []
+  if(val === false) return [];
   if(val === true) return BOOTSTRAP_NODES;
-  return [].concat(val || BOOTSTRAP_NODES).map(parsePeer)
+  return [].concat(val || BOOTSTRAP_NODES).map(parsePeer);
 }
 
 function isNodeId(id, idLength) {
-  return id && Buffer.isBuffer(id) && id.length === idLength
+  return id && Buffer.isBuffer(id) && id.length === idLength;
 }
 
 function encodeNodes(nodes, idLength) {
-  var buf = Buffer.allocUnsafe(nodes.length * (idLength + 6))
-  var ptr = 0
+  var buf = Buffer.allocUnsafe(nodes.length * (idLength + 6));
+  var ptr = 0;
 
   for(var i = 0; i < nodes.length; i++) {
-    var node = nodes[i]
-    if(!isNodeId(node.id, idLength)) continue
-    node.id.copy(buf, ptr)
-    ptr += idLength
-    var ip = (node.host || node.address).split('.')
-    for(var j = 0; j < 4; j++) buf[ptr++] = parseInt(ip[j] || 0, 10)
-    buf.writeUInt16BE(node.port, ptr)
-    ptr += 2
+    var node = nodes[i];
+    if(!isNodeId(node.id, idLength)) continue;
+    node.id.copy(buf, ptr);
+    ptr += idLength;
+    var ip = (node.host || node.address).split('.');
+    for(var j = 0; j < 4; j++) 
+      buf[ptr++] = parseInt(ip[j] || 0, 10);
+    buf.writeUInt16BE(node.port, ptr);
+    ptr += 2;
   }
 
-  if(ptr === buf.length) return buf
-  return buf.slice(0, ptr)
+  if(ptr === buf.length) return buf;
+  return buf.slice(0, ptr);
 }
 
 function parseNodes(buf, idLength) {
-  let contacts = []
+  let contacts = [];
   try {
     for(var i = 0; i < buf.length; i += (idLength + 6)) {
-      var port = buf.readUInt16BE(i + (idLength + 4))
-      if(!port) continue
+      var port = buf.readUInt16BE(i + (idLength + 4));
+      if(!port) continue;
       contacts.push({
         id: buf.slice(i, i + idLength),
         host: parseIp(buf, i + idLength),
         port: port,
         distance: 0, // ?
         token: null
-      })
+      });
     }
   } catch(err) {
     // do nothing
   }
 
-  return contacts
+  return contacts;
 }
 
 function parseIp(buf, offset) {
-  return buf[offset++] + '.' + buf[offset++] + '.' + buf[offset++] + '.' + buf[offset++]
+  return buf[offset++] + '.' + buf[offset++] + '.' + buf[offset++] + '.' + buf[offset++];
 }
 
 function parsePeer(peer) {
-  if(typeof peer === 'string') return { host: peer.split(':')[0], port: Number(peer.split(':')[1]) }
-  return peer
+  if(typeof peer === 'string')
+    return { host: peer.split(':')[0], port: Number(peer.split(':')[1]) };
+  return peer;
 }
 
 function noop() {}
 
 function toBuffer(str) {
-  if(Buffer.isBuffer(str)) return str
-  if(ArrayBuffer.isView(str)) return Buffer.from(str.buffer, str.byteOffset, str.byteLength)
-  if(typeof str === 'string') return Buffer.from(str, 'hex')
-  throw new Error('Pass a buffer or a string')
+  if(Buffer.isBuffer(str)) return str;
+  if(ArrayBuffer.isView(str)) return Buffer.from(str.buffer, str.byteOffset, str.byteLength);
+  if(typeof str === 'string') return Buffer.from(str, 'hex');
+  throw new Error('Pass a buffer or a string');
 }
 

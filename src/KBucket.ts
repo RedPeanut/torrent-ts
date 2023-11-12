@@ -234,22 +234,22 @@ export class KBucket extends EventEmitter {
    * @return {Array}          Array Maximum of n closest contacts to the node id
    */
   closest(id, n = Infinity) {
-    ensureInt8('id', id)
+    ensureInt8('id', id);
 
     if((!Number.isInteger(n) && n !== Infinity) || n <= 0) {
-      throw new TypeError('n is not positive number')
+      throw new TypeError('n is not positive number');
     }
 
-    let contacts = []
+    let contacts = [];
 
     for(let nodes = [this.root], bitIndex = 0; nodes.length > 0 && contacts.length < n;) {
-      const node = nodes.pop()
+      const node = nodes.pop();
       if(node.contacts === null) {
-        const detNode = this._determineNode(node, id, bitIndex++)
-        nodes.push(node.left === detNode ? node.right : node.left)
-        nodes.push(detNode)
+        const detNode = this._determineNode(node, id, bitIndex++);
+        nodes.push(node.left === detNode ? node.right : node.left);
+        nodes.push(detNode);
       } else {
-        contacts = contacts.concat(node.contacts)
+        contacts = contacts.concat(node.contacts);
       }
     }
 
@@ -263,7 +263,7 @@ export class KBucket extends EventEmitter {
       .map(a => [this.distance(a.id, id), a])
       .sort((a, b) => a[0] - b[0])
       .slice(0, n)
-      .map(a => a[1])
+      .map(a => a[1]);
   }
 
   /**
