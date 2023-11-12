@@ -1,17 +1,15 @@
 const magnet = require('magnet-uri');
 const Rpc = require('../src/Rpc');
+// const krpc = require('k-rpc');
 
 class TestRpc {
   run(args: []): void {
-    // console.log('krpc =', krpc);
-    // const rpc = new krpc.default({});
-    const _rpc = new Rpc.default({});
-    // const debug = require('debug')('k-rpc-ts')
-
+    
     const captain = 'magnet:?xt=urn:btih:2ae7f9a05790e713f7c753af931e32d138ce2a61'; // 캡틴아메리카 윈터솔져
     const parsed = magnet(captain);
     const target = Buffer.from(parsed.infoHash, 'hex');
-
+    
+    let _rpc = new Rpc.default({});
     _rpc.on('query', function(query, peer) {
       // console.log(query, peer);
       // console.trace();

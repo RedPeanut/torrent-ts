@@ -10,20 +10,20 @@ interface Options {
 
 export default class DHT extends EventEmitter {
 
-  // _rpc: typeof Rpc;
-  _rpc: Rpc;
+  // rpc: typeof Rpc;
+  rpc: Rpc;
   nodeId: Buffer;
 
   constructor(opts: Options) {
     super();
-    this._rpc = new Rpc({});
+    this.rpc = new Rpc({});
   }
 
   announce(infoHash, port, cb) {
     const message = {
       q: 'announce_peer',
       a: {
-        id: this._rpc.id,
+        id: this.rpc.id,
         token: null, // queryAll sets this
         info_hash: infoHash,
         port,
@@ -31,7 +31,7 @@ export default class DHT extends EventEmitter {
       }
     };
     this._debug('announce %s %d', infoHash, port);
-    this._rpc.queryAll(this._rpc.nodes.closest(infoHash), message, null, cb);
+    this.rpc.queryAll(this.rpc.nodes.closest(infoHash), message, null, cb);
   }
 
   lookup(infoHash, cb) {
@@ -40,7 +40,7 @@ export default class DHT extends EventEmitter {
     // const parsed = magnet(infoHash);
     const target = Buffer.from(infoHash, 'hex');
 
-    this._rpc.on('query', function(query, peer) {
+    this.rpc.on('query', function(query, peer) {
       // debug(query, peer);
       // console.trace();
       if(query.q === undefined || query.q === null) return;
@@ -59,10 +59,10 @@ export default class DHT extends EventEmitter {
 
     let then = Date.now();
 
-    // TODO: get_peers with bootstrap node
-    this._rpc.bootstrap(this._rpc.id, { q: 'get_peers', a: { id: self._rpc.id, info_hash: target } }, function(err, numberOfReplies) {
+    // get_peers with bootstrap node
+    this.rpc.bootstrap(this.rpc.id, { q: 'get_peers', a: { id: self.rpc.id, info_hash: target } }, function(err, numberOfReplies) {
     // _rpc.bootstrap(_rpc.id, { q: 'find_node', a: { id: _rpc.id, target: target } }, function(err, numberOfReplies) {
-      debug('(bootstrapped)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
+      debug('(bootstrap)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
       // debug(require('util').inspect(_rpc.nodes.root, false, null))
 
       // _rpc.destroy(() => {
@@ -72,24 +72,24 @@ export default class DHT extends EventEmitter {
       then = Date.now();
 
       // get_peers
-      self._rpc.getPeers(target, { q: 'get_peers', a: { id: self._rpc.id, info_hash: target } }, visit, function(err, numberOfReplies) {
+      self.rpc.getPeers(target, { q: 'get_peers', a: { id: self.rpc.id, info_hash: target } }, visit, function(err, numberOfReplies) {
         // console.trace();
-        debug('(get_peers)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
+        debug('(getPeers)', Date.now() - then, 'ms, numberOfReplies =', numberOfReplies);
         // debug(require('util').inspect(_rpc.nodes.root, false, null))
         // let get = self._rpc.nodes.get(target);
         // debug('get =', get);
-        self._rpc.destroy(() => {
+        self.rpc.destroy(() => {
           debug('destroy callback is called...');
         });
       });
     });
 
     function visit(res, peer) {
-      debug('visit() is called...');
+      // debug('visit() is called...');
       // debug('res =', res);
       const peers = res.r.values ? decodePeers(res.r.values) : [];
       for(let i = 0; i < peers.length; i++)
-        self.emit('peer', peers[i], infoHash, peer || null)
+        self.emit('peer', peers[i], infoHash, peer || null);
     }
 
     function decodePeers(buf: Buffer[]) {
@@ -97,7 +97,6 @@ export default class DHT extends EventEmitter {
       try {
         for(let i = 0; i < buf.length; i++) {
           let port = buf[i].readUInt16BE(4);
-          // debug(`[${i}] port =`, port);
           if(!port) continue;
           peers.push({
             host: parseIp(buf[i], 0),
