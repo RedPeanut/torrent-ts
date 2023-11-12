@@ -258,6 +258,7 @@ export class KBucket extends EventEmitter {
     // let _slice = _sort.slice(0, n)
     // let result = _slice.map(a => a[1]);
     // return result;
+    // debug('n =', n);
 
     return contacts
       .map(a => [this.distance(a.id, id), a])
