@@ -18,6 +18,7 @@
     "example": "ts-node example.ts"
   },
   "dependencies": {
+    "addr-to-ip-port": "1.5.4",
     "bencode": "2.0.3",
     "chalk": "4.1.2",
     "chrome-dgram": "3.0.6",

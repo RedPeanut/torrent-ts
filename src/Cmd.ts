@@ -95,7 +95,7 @@ function runDownload(torrentId) {
   torrent.on('infoHash', () => {});
   torrent.on('metadata', () => {});
   torrent.on('done', () => {});
-  webTorrent.startDiscovery(torrent);
+  torrent.startDiscovery();
 }
 
 function runDownloadMeta(torrentId) {

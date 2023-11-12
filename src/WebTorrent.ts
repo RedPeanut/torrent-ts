@@ -11,6 +11,7 @@ export default class WebTorrent {
   destroyed: boolean = false;
   dht: DHT;
   torrents: Torrent[] = [];
+  _debugId: string;
 
   constructor(opts: Options) {
     this.dht = new DHT({});
@@ -22,15 +23,5 @@ export default class WebTorrent {
     this.torrents.push(torrent);
     return torrent;
   }
-
-  startDiscovery(torrent: Torrent) {
-    this.dht.lookup(torrent.infoHash, null);
-    this.dht.on('peer', (peer, source) => {
-      debug('peer %s discovered via %s', peer, source);
-      // this.addPeer(peer);
-    });
-  }
-
-  addPeer(peer) {}
 
 }
