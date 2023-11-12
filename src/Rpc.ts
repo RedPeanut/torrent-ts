@@ -304,24 +304,34 @@ export default class Rpc extends EventEmitter {
     let index = 0;
     let step = 0, cycle = 0;
     let stop = false;
-    let closest;
+    // let closest;
     let queried = {};
 
-    // this.socket.on('update', kick); // ?
+    // ?
+    let table = new KBucket({
+      localNodeId: target,
+      numberOfNodesPerKBucket: this.k,
+      numberOfNodesToPing: this.concurrency
+    });
+
+    this.socket.on('update', kick); // ?
     kick();
 
     function kick() {
 
       if(self.destroyed || self.socket.inflight >= self.concurrency) return;
 
-      closest = self.nodes.closest(target, self.k);
-      debug('closest.length =', closest.length);
+      let closest = table.closest(target, self.k);
+      if (!closest.length)
+        closest = self.nodes.closest(target, self.k)
+      
+      // debug('closest.length =', closest.length);
 
       for(let i = 0; i < closest.length; i++) {
         if(stop) break;
         if(self.socket.inflight >= self.concurrency) return;
 
-        let contact = closest[i++];
+        let contact = closest[i];
         let id = contact.host + ':' + contact.port;
         if(queried[id]) continue;
         queried[id] = true;
@@ -336,6 +346,10 @@ export default class Rpc extends EventEmitter {
       }
     }
 
+    function done() {
+      cb(null, count);
+    }
+
     function afterQuery(err, res, peer) {
 
       pending--;
@@ -346,53 +360,44 @@ export default class Rpc extends EventEmitter {
       ) {
         // debug('bad...');
         self.nodes.remove(peer.id);
-      } else {
-        let r = res && res.r;
-
-        /* if(!r) {
-          debug('!r...');
-          return kick();
-        } */
-
-        if(!err && isNodeId(r.id, self.idLength)) {
-          debug('good...');
-          count++;
-
-          /* add({
-            id: r.id,
-            port: peer.port,
-            host: peer.host || peer.address,
-            distance: 0,
-            flags: 0
-          }); */
-
-          let nodes = r.nodes ? parseNodes(r.nodes, self.idLength) : [];
-          for(let i = 0; i < nodes.length; i++)
-            add(nodes[i]);
-
-          visit && visit(res, peer);
-          // if(visit) visit(res, peer);
-          // if(visit && visit(res, peer) === false) stop = true
-
-          // process.nextTick(done);
-          // kick();
-
-        } else {
-          debug('error...');
-          debug('err =', err, ', res =', res, ', peer =', peer);
-          // self.nodes.remove(peer.id);
-        }
       }
+    
+      let r = res && res.r;
+      if(!r) {
+        // debug('!r...');
+        return kick();
+      }
+
+      if(!err && isNodeId(r.id, self.idLength)) {
+        // debug('good...');
+        count++;
+
+        add({
+          id: r.id,
+          port: peer.port,
+          host: peer.host || peer.address,
+          distance: 0,
+          flags: 0
+        });
+
+
+      } else {
+        debug('error...');
+        debug('err =', err, ', res =', res, ', peer =', peer);
+        // self.nodes.remove(peer.id);
+      }
+      
+      let nodes = r.nodes ? parseNodes(r.nodes, self.idLength) : [];
+      for(let i = 0; i < nodes.length; i++)
+        add(nodes[i]);
+
+      visit && visit(res, peer);
       kick();
     }
 
     function add(node) {
       if(node.id.equals(self.id)) return;
-      self.nodes.add(node);
-    }
-
-    function done() {
-      cb(null, count);
+      table.add(node);
     }
   }
 

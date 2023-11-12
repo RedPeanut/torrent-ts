@@ -86,7 +86,7 @@ export default class DHT extends EventEmitter {
 
     function visit(res, peer) {
       debug('visit() is called...');
-      debug('res =', res);
+      // debug('res =', res);
       const peers = res.r.values ? decodePeers(res.r.values) : [];
       for(let i = 0; i < peers.length; i++)
         self.emit('peer', peers[i], infoHash, peer || null)
@@ -97,7 +97,7 @@ export default class DHT extends EventEmitter {
       try {
         for(let i = 0; i < buf.length; i++) {
           let port = buf[i].readUInt16BE(4);
-          debug(`[${i}] port =`, port);
+          // debug(`[${i}] port =`, port);
           if(!port) continue;
           peers.push({
             host: parseIp(buf[i], 0),
