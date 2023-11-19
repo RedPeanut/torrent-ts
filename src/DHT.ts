@@ -78,9 +78,9 @@ export default class DHT extends EventEmitter {
         // debug(require('util').inspect(_rpc.nodes.root, false, null))
         // let get = self._rpc.nodes.get(target);
         // debug('get =', get);
-        self.rpc.destroy(() => {
-          debug('destroy callback is called...');
-        });
+        // self.rpc.destroy(() => {
+        //   debug('destroy callback is called...');
+        // });
       });
     });
 
@@ -112,6 +112,12 @@ export default class DHT extends EventEmitter {
     function parseIp(buf: Buffer, offset: number) {
       return buf[offset++] + '.' + buf[offset++] + '.' + buf[offset++] + '.' + buf[offset++]
     }
+  }
+
+  destroy(cb: Function) {
+    this.rpc.destroy(() => { 
+      cb(null);
+    });
   }
 
   _debug(...args) {

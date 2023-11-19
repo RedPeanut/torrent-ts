@@ -3,7 +3,7 @@ import { hideBin } from 'yargs/helpers'
 import fs from 'fs'
 import chalk from 'chalk'
 import stripIndent from 'common-tags/lib/stripIndent/index.js'
-import WebTorrent from './WebTorrent'
+import Client from './Client'
 import Torrent from './Torrent';
 
 const options = {
@@ -18,7 +18,7 @@ const commands = [
   { command: 'help', desc: 'Show help information', handler: null }
 ];
 
-let client, server, webTorrent, argv;
+let server, client, argv;
 let gracefullyExiting = false;
 const yargs = Yargs();
 
@@ -59,10 +59,10 @@ function gracefulExit() {
   process.removeListener('SIGINT', gracefulExit);
   process.removeListener('SIGTERM', gracefulExit);
 
-  if(!webTorrent)
+  if(!client)
     return;
   
-  webTorrent.destroy(err => {
+  client.destroy(err => {
     if(err) {
       return fatalError(err);
     }
@@ -75,12 +75,12 @@ function fatalError(err) {
 }
 
 function init(_argv) {
-  console.log('init() is called...');
+  // console.log('init() is called...');
   argv = _argv;
 }
 
 function processInputs(inputs, fn) {
-  console.log('processInputs() is called...');
+  // console.log('processInputs() is called...');
   if(Array.isArray(inputs) && inputs.length !== 0) {
     inputs.forEach(input => fn(input));
   } else {
@@ -89,9 +89,9 @@ function processInputs(inputs, fn) {
 }
 
 function runDownload(torrentId) {
-  console.log('runDownload() is called...');
-  webTorrent = new WebTorrent({});
-  let torrent = webTorrent.add(torrentId);
+  // console.log('runDownload() is called...');
+  client = new Client({});
+  let torrent = client.add(torrentId);
   torrent.on('infoHash', () => {});
   torrent.on('metadata', () => {});
   torrent.on('done', () => {});
@@ -100,8 +100,8 @@ function runDownload(torrentId) {
 
 function runDownloadMeta(torrentId) {
   // console.log('argv.out =', argv.out, ', argv.quiet =', argv.quiet);
-  webTorrent = new WebTorrent({});
-  const torrent = webTorrent.add(torrentId);
+  client = new Client({});
+  const torrent = client.add(torrentId);
   torrent.on('infoHash', function() {
     const torrentFilePath = `${argv.out}/${this.infoHash}.torrent`;
 
