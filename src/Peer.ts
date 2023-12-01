@@ -62,7 +62,7 @@ export default class Peer {
   handshakeTimeout: NodeJS.Timeout|string|number = null;
   
   startConnectTimeout () {
-    clearTimeout(this.connectTimeout)
+    clearTimeout(this.connectTimeout);
 
     const connectTimeoutValues = {
       // webrtc: CONNECT_TIMEOUT_WEBRTC,

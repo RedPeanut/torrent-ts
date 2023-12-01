@@ -209,8 +209,8 @@ export default class Rpc extends EventEmitter {
   }
 
   destroy = function(cb) {
-    this.destroyed = true
-    this.socket.destroy(cb)
+    this.destroyed = true;
+    this.socket.destroy(cb);
   }
   
   clear = function() {
