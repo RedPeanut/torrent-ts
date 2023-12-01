@@ -56,7 +56,7 @@ export default class Torrent extends EventEmitter {
 
   _onListening() {
     if(this.destroyed) return;
-    this._startDiscovery();
+    this.startDiscovery();
   }
 
   _startDiscovery() {
@@ -68,17 +68,18 @@ export default class Torrent extends EventEmitter {
     this.client.dht.lookup(this.infoHash, null);
     this.client.dht.on('peer', (peer, source) => {
       debug('peer %s discovered via %s', peer, source);
-      // self.addPeer(peer);
+      self.addPeer(peer);
     });
   }
 
   addPeer(peer) {
     const wasAdded = !!this._addPeer(peer);
-    this._drain();
+    // this._drain();
   }
 
   _addPeer(peer): Peer {
-    let newPeer: Peer = Peer.createTCPOutgoingPeer(peer, this /* swarm */);
+    const id = peer.host + ':' + peer.port;
+    let newPeer: Peer = Peer.createTCPOutgoingPeer(id, this /* swarm */);
     // _registerPeer(newPeer);
     this._queue.push(newPeer);
     this._drain();

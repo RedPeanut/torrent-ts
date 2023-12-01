@@ -20,10 +20,10 @@ export default class Peer {
     return peer;
   }
 
-  id: string;
+  id: string; /* ip:port string */
   type: string;
 
-  addr: string;
+  addr: string; /* ip:port string */
   swarm: Torrent;
   wire: Wire;
   conn: net.Socket;
