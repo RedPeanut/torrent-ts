@@ -28,6 +28,9 @@ export default class Peer {
   wire: Wire;
   conn: net.Socket;
 
+  connected: boolean = false;
+  destroyed: boolean = false;
+
   /**
    * 
    * @param {string} id 
@@ -39,8 +42,25 @@ export default class Peer {
   }
 
   onConnect() {
+
+    if(this.destroyed) return;
+    this.connected = true;
+
     debug('Peer %s connected', this.id);
-    // const conn = this.conn;
+    const conn = this.conn
+    conn.once('end', () => {
+      this.destroy(null);
+    });
+    conn.once('close', () => {
+      this.destroy(null);
+    });
+    conn.once('finish', () => {
+      this.destroy(null);
+    });
+    conn.once('error', err => {
+      this.destroy(err);
+    });
+
     const wire = this.wire = new Wire(this.type);
     wire.once('handshake', (infoHash, peerId) => {
       this.onHandshake(infoHash, peerId)
@@ -55,7 +75,9 @@ export default class Peer {
    * @param {string} peerId 
    */
   onHandshake(infoHash: string, peerId: string) {
-
+    clearTimeout(this.handshakeTimeout);
+    let addr = this.addr;
+    this.swarm._onWire(this.wire, addr);
   }
 
   connectTimeout: NodeJS.Timeout|string|number = null;
@@ -84,8 +106,6 @@ export default class Peer {
     if(this.handshakeTimeout.unref) this.handshakeTimeout.unref();
   }
 
-  destroyed: boolean = false;
-
   destroy(err: Error) {
     if(this.destroyed) return;
     this.destroyed = true;
@@ -103,6 +123,8 @@ export default class Peer {
     this.conn = null;
     this.wire = null;
 
+    if(wire) wire.destroy();
+    if(swarm) swarm.removePeer(this.id);
   }
 
   handshake() {

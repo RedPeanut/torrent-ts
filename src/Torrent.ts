@@ -11,8 +11,13 @@ import Client from './Client';
 import net from 'net'; // browser exclude?
 import addrToIPPort from 'addr-to-ip-port';
 import Peer from './Peer';
+import Wire from './Wire';
 
 const debug = require('debug')('torrent');
+
+interface PeersMap {
+  [key: string]: Peer;
+}
 
 export default class Torrent extends EventEmitter {
 
@@ -23,8 +28,11 @@ export default class Torrent extends EventEmitter {
   // debugId;
 
   _queue: Peer[] = [];
-  _peers = {};
+  _peers: PeersMap = {};
   _peersLength: number = 0; // cache for perf?
+
+  wires: Wire[];
+  metadata;
 
   // stats
 
@@ -134,7 +142,32 @@ export default class Torrent extends EventEmitter {
     if(!peer) return;
     peer.destroy(null);
     delete this._peers[id];
-    // this._peersLength -= 1;
+    this._peersLength -= 1;
+  }
+
+  _onWire(wire: Wire, addr: string) {
+    this._debug('got wire %s (%s)', wire._debugId, addr);
+    this.wires.push(wire);
+    wire.on('timeout', () => {
+      this._debug('wire timeout (%s)', addr);
+    });
+
+    // Send KEEP-ALIVE (every 60s) so peers will not disconnect the wire
+    wire.setKeepAlive(true);
+
+    // use ut_metadata extension
+    // wire.use(new UtMetadata(wire));
+    /*if(!this.metadata) {
+      wire.ut_metadata.on('metadata', metadata => {
+        this._onMetadata(metadata);
+      });
+      wire.ut_metadata.fetch();
+    }
+
+    if(!this.private) {
+      wire.use(utPex());
+    }
+    wire.use(ltDontHave()); */
   }
 
   _debugId: string;
