@@ -22,8 +22,9 @@ export default class Torrent extends EventEmitter {
   infoHash;
   // debugId;
 
-  _queue = [];
+  _queue: Peer[] = [];
   _peers = {};
+  _peersLength: number = 0; // cache for perf?
 
   // stats
 
@@ -80,7 +81,7 @@ export default class Torrent extends EventEmitter {
   _addPeer(peer): Peer {
     const id = peer.host + ':' + peer.port;
     let newPeer: Peer = Peer.createTCPOutgoingPeer(id, this /* swarm */);
-    // _registerPeer(newPeer);
+    this._registerPeer(newPeer);
     this._queue.push(newPeer);
     this._drain();
     return newPeer;
@@ -110,11 +111,30 @@ export default class Torrent extends EventEmitter {
     if(this.destroyed) return;
     this.destroyed = true;
     this._debug('destroy');
+
+    //this.client._remove(this);
+    for(const id in this._peers) {
+      this.removePeer(id);
+    }
+
     this.emit('close');
 
     this.client = null;
     this.discovery = null;
     this._peers = null;
+  }
+
+  _registerPeer(newPeer: Peer) {
+    this._peers[newPeer.id] = newPeer;
+    this._peersLength += 1;
+  }
+
+  removePeer(id: string) {
+    const peer = this._peers[id];
+    if(!peer) return;
+    peer.destroy(null);
+    delete this._peers[id];
+    // this._peersLength -= 1;
   }
 
   _debugId: string;

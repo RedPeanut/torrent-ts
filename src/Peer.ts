@@ -89,7 +89,10 @@ export default class Peer {
   destroy(err: Error) {
     if(this.destroyed) return;
     this.destroyed = true;
+
     debug('destroy %s %s (error: %s)', this.type, this.id, err && (err.message || err));
+
+    clearTimeout(this.connectTimeout);
     clearTimeout(this.handshakeTimeout);
 
     const swarm = this.swarm;
@@ -99,6 +102,7 @@ export default class Peer {
     this.swarm = null;
     this.conn = null;
     this.wire = null;
+
   }
 
   handshake() {
