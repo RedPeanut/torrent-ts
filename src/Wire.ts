@@ -1,6 +1,7 @@
 import stream from 'readable-stream';
 import randombytes from 'randombytes';
 import bencode from 'bencode';
+import { Extensions } from './Types';
 const debug = require('debug')('wire');
 
 const KEEP_ALIVE_TIMEOUT = 55000;
@@ -95,14 +96,14 @@ export default class Wire extends stream.Duplex {
       }
     } else {
       if(this.extendedMapping[ext]) {
-        ext = this.extendedMapping[ext]; // friendly name for extension
-        if(this._ext[ext]) {
+        let extensionName = this.extendedMapping[ext]; // friendly name for extension
+        if(this._ext[extensionName]) {
           // there is an registered extension handler, so call it
-          this._ext[ext].onMessage(buf);
+          this._ext[extensionName].onMessage(buf);
         }
+        this._debug('got extended message ext=%s', extensionName);
+        this.emit('extended', extensionName, buf);
       }
-      this._debug('got extended message ext=%s', ext);
-      this.emit('extended', ext, buf);
     }
   }
 
@@ -213,36 +214,36 @@ export default class Wire extends stream.Duplex {
     }, KEEP_ALIVE_TIMEOUT);
   }
 
-  _ext: { string: any }; // string -> function, ex 'xxx' -> xxx()
+  _ext: { string: any }; // string -> instance
   _nextExt: number = 1;
-  extendedMapping;
+  extendedMapping: [string];
 
-  // /**
-  //  * 
-  //  * @param {Type} extension 
-  //  */
-  // use<Type extends Extensions>(extension: Type) {
-  //   const name = extension.name;
-  //   /* const name = extension.prototype.name;
-  //   this._debug('use extension.name=%s', name);
-  //   const ext = this._nextExt;
-  //   const handler = new extension(this);
+  /**
+   * 
+   * @param {extends Extensions} extension 
+   */
+  use<Type extends Extensions>(extension: Type) {
+    const name = extension.name;
+    // const name = extension.prototype.name;
+    this._debug('use extension.name=%s', name);
+    const ext = this._nextExt;
+    const handler = extension; //new extension(this);
 
-  //   function noop() {}
+    function noop() {}
 
-  //   if(typeof handler.onHandshake !== 'function')
-  //     handler.onHandshake = noop;
-  //   if(typeof handler.onExtendedHandshake !== 'function')
-  //     handler.onHandshake = noop;
-  //   if(typeof handler.onMessage !== 'function')
-  //     handler.onHandshake = noop;
+    if(typeof handler.onHandshake !== 'function')
+      handler.onHandshake = noop;
+    if(typeof handler.onExtendedHandshake !== 'function')
+      handler.onExtendedHandshake = noop;
+    if(typeof handler.onMessage !== 'function')
+      handler.onMessage = noop;
 
-  //   this.extendedMapping[ext] = name;
-  //   this._ext[name] = handler;
-  //   this[name] = handler;
+    this.extendedMapping[ext] = name;
+    this._ext[name] = handler;
+    this[name] = handler;
 
-  //   this._nextExt += 1; */
-  // }
+    this._nextExt += 1;
+  }
 
   destroy() {
     if(this.destroyed) return;

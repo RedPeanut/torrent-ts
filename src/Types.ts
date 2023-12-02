@@ -7,6 +7,21 @@ export const flag_ipv6_address = 5;
 export const flag_alive = 6;
 export const flag_done = 7;
 
+// export interface Extensions {}
+export class Extensions {
+  name: string; /* to be set */
+  // onHandshake: Function;
+  // onExtendedHandshake: Function;
+  // onMessage: Function;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  onHandshake() {}
+  onExtendedHandshake() {}
+  onMessage(buf: Buffer) {}
+}
 export interface Contact {
   id;
   host;

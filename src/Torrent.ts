@@ -13,6 +13,10 @@ import addrToIPPort from 'addr-to-ip-port';
 import Peer from './Peer';
 import Wire from './Wire';
 
+import UtMetadata from './extensions/UtMetadata';
+import UtPex from './extensions/UtPex';
+import LtDonthave from './extensions/LtDonthave';
+
 const debug = require('debug')('torrent');
 
 interface PeersMap {
@@ -146,7 +150,9 @@ export default class Torrent extends EventEmitter {
   }
 
   _onWire(wire: Wire, addr: string) {
+
     this._debug('got wire %s (%s)', wire._debugId, addr);
+
     this.wires.push(wire);
     wire.on('timeout', () => {
       this._debug('wire timeout (%s)', addr);
@@ -156,7 +162,8 @@ export default class Torrent extends EventEmitter {
     wire.setKeepAlive(true);
 
     // use ut_metadata extension
-    // wire.use(new UtMetadata(wire));
+    wire.use(new UtMetadata(wire));
+    
     /*if(!this.metadata) {
       wire.ut_metadata.on('metadata', metadata => {
         this._onMetadata(metadata);
