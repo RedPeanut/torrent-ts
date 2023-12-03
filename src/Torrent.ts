@@ -51,10 +51,10 @@ export default class Torrent extends EventEmitter {
   _onTorrentId(torrentId) {
     if(this.destroyed) return;
     let parsedTorrent;
-    try { parsedTorrent = parseTorrent(torrentId) } catch (err) {}
+    try { parsedTorrent = parseTorrent(torrentId); } catch (err) {}
     if(parsedTorrent) {
-      this.infoHash = parsedTorrent.infoHash
-      this._debugId = parsedTorrent.infoHash.toString('hex').substring(0, 7)
+      this.infoHash = parsedTorrent.infoHash;
+      this._debugId = parsedTorrent.infoHash.toString('hex').substring(0, 7);
       queueMicrotask(() => {
         if(this.destroyed) return;
         this._onParsedTorrent(parsedTorrent);
@@ -163,7 +163,7 @@ export default class Torrent extends EventEmitter {
 
     // use ut_metadata extension
     wire.use(new UtMetadata(wire));
-    
+
     /*if(!this.metadata) {
       wire.ut_metadata.on('metadata', metadata => {
         this._onMetadata(metadata);
