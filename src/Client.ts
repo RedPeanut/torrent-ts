@@ -4,7 +4,7 @@ import parallel from 'run-parallel';
 import randombytes from 'randombytes';
 
 const debug = require('debug')('client');
-const { version: VERSION } = require('../package.json');
+const { version: VERSION } = require('../../package.json');
 
 /**
  * Version number in Azureus-style. Generated from major and minor semver version.

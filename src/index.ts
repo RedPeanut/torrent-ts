@@ -1,3 +1,2 @@
-import './Rpc';
-import './Socket';
-import './KBucket';
+import Cmd from './Cmd';
+new Cmd().exec();

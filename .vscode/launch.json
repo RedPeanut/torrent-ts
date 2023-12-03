@@ -13,9 +13,14 @@
         "NODE_ENV": "development",
       },
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "program": "${workspaceFolder}/test/TestRpc.ts",
-      // "program": "./node_modules/.bin/ts-node",
-      // "args": ["example.ts"],
+      "program": "${workspaceFolder}/src/index.ts",
+      // "program": "${workspaceFolder}/test/TestSample.ts",
+      // "program": "./node_modules/.bin/ts-node", // 
+      // "args": ["2ae7f9a05790e713f7c753af931e32d138ce2a61"], // 윈터솔져
+      "args": ["downloadmeta", "d22c10d9ba9504331bdcca110822cda1b196f6c0"], // 이웃집 토토로
+      //"args": ["59397484609e071f3a9438e133ed6ce48cebeef4"], // 화양연화
+      //"args": ["d432cf499a92ff51e6ecfbb1f800a00cb87d3134"], // 아비정전
+      //"args": ["676efbe499b9ba680b79b9d978556a6f5dede2b3"], // 중경삼림
       "skipFiles": [
           "<node_internals>/**"
       ],

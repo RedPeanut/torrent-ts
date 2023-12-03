@@ -153,4 +153,4 @@ export default class Cmd {
   }
 }
 
-new Cmd().exec();
+// new Cmd().exec();
