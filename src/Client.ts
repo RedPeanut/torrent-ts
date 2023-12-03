@@ -17,16 +17,17 @@ const VERSION_STR = VERSION
   .slice(0, 4)
 
 /**
- * Version prefix string (used in peer ID). WebTorrent uses the Azureus-style
- * encoding: '-', two characters for client id ('WW'), four ascii digits for version
+ * Version prefix string (used in peer ID). uses the Azureus-style
+ * encoding: '-', two characters for client id ('TT'), four ascii digits for version
  * number, '-', followed by random numbers.
  * For example:
- *   '-WW0102-'...
+ *   '-TT0102-'...
  */
 const VERSION_PREFIX = `-TT${VERSION_STR}-`
 
 interface Options {
   dht?: DHT;
+  path?: string;
 }
 
 export default class Client {

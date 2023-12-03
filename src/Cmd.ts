@@ -5,11 +5,12 @@ import chalk from 'chalk'
 import stripIndent from 'common-tags/lib/stripIndent/index.js'
 import Client from './Client'
 import Torrent from './Torrent';
+const debug = require('debug')('cmd');
 
 export default class Cmd {
   
   server;
-  client;
+  client: Client;
   argv;
   gracefullyExiting = false;
 
@@ -20,7 +21,7 @@ export default class Cmd {
   exec() {
     process.title = 'torrent-ts';
     process.on('exit', code => {
-      console.log('exit event is called...');
+      debug('exit event is called...');
       if(code === 0) return; // normal exit
       if(code === 130) return; // intentional exit with Control-C
     });
@@ -89,13 +90,15 @@ export default class Cmd {
    * must be called with binding for this
    * @param _argv 
    */
-  init(_argv) {
-    console.log('init() is called...');
+  init(_argv: object) {
+    debug('init() is called...');
+    debug(_argv);
+    // console.log(typeof(_argv));
     this.argv = _argv;
   }
   
   processInputs(inputs, fn) {
-    console.log('processInputs() is called...');
+    debug('processInputs() is called...');
     if(Array.isArray(inputs) && inputs.length !== 0) {
       inputs.forEach(input => fn(input));
     } else {
@@ -109,10 +112,15 @@ export default class Cmd {
    */
   runDownload(torrentId) {
     // console.log('runDownload() is called...');
-    this.client = new Client({});
+    if(!this.argv.out && !this.argv.stdout)
+      this.argv.out = process.cwd();
+
+    this.client = new Client({
+      path: this.argv.out
+    });
     const torrent = this.client.add(torrentId);
     torrent.on('infoHash', () => {});
-    torrent.on('metadata', () => {});
+    // torrent.on('metadata', () => {});
     torrent.on('done', () => {});
     // torrent.startDiscovery();
   }
@@ -123,11 +131,17 @@ export default class Cmd {
    */
   runDownloadMeta(torrentId) {
     // console.log('argv.out =', argv.out, ', argv.quiet =', argv.quiet);
+    if(!this.argv.out && !this.argv.stdout)
+      this.argv.out = process.cwd();
+
     let self = this;
     this.client = new Client({});
     const torrent = this.client.add(torrentId);
+
+    // torrent.on('stop', this.gracefulExit.bind(this));
+
     torrent.on('infoHash', function() {
-      const torrentFilePath = `${this.argv.out}/${this.infoHash}.torrent`;
+      const torrentFilePath = `${self.argv.out}/${this.infoHash}.torrent`;
   
       // if(this.argv.quiet)
       //   return;
@@ -151,6 +165,15 @@ export default class Cmd {
       })
     });
   }
+
+  /**
+   * 
+   * @returns 
+   */
+  getRuntime(): number {
+    return Math.floor((Date.now() - this.argv.startTime) / 1000);
+  }
+
 }
 
 // new Cmd().exec();

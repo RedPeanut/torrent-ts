@@ -107,6 +107,18 @@ export default class Wire extends stream.Duplex {
     }
   }
 
+  _onHave(index: number) {
+    
+  }
+
+  _onBitField(buffer: Buffer) {
+
+  }
+
+  _onPiece(index: number, offset: number, buffer: Buffer) {
+
+  }
+
   /**
    * Handle a message from the remote peer.
    * @param {Buffer} buffer 
@@ -114,6 +126,16 @@ export default class Wire extends stream.Duplex {
   _onMessage(buffer: Buffer) {
     this._parse(4, this._onMessageLength);
     switch(buffer[0]) {
+      case 4:
+        return this._onHave(buffer.readUInt32BE(1));
+      case 5:
+        return this._onBitField(buffer.slice(1));
+      case 7:
+        return this._onPiece(
+          buffer.readUInt32BE(1),
+          buffer.readUInt32BE(5),
+          buffer.slice(9)
+        );
       case 20:
         return this._onExtended(buffer.readUint8(1), buffer.slice(2));
       default:

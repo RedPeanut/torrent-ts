@@ -39,6 +39,7 @@ export default class Torrent extends EventEmitter {
   metadata;
 
   // stats
+  numPeers: number = 0;
 
   // for cleanup
 
@@ -64,6 +65,9 @@ export default class Torrent extends EventEmitter {
 
   _onParsedTorrent(parsedTorrent) {
     if(this.destroyed) return;
+    // debug('this.infoHash =', this.infoHash);
+    // this.emit('stop');
+    this.emit('infoHash', this.infoHash);
     this._onListening();
   }
 
@@ -142,9 +146,11 @@ export default class Torrent extends EventEmitter {
   }
 
   removePeer(id: string) {
+    if(!this._peers) return;
     const peer = this._peers[id];
     if(!peer) return;
     peer.destroy(null);
+    this._debug('removePeer %s', id);
     delete this._peers[id];
     this._peersLength -= 1;
   }
