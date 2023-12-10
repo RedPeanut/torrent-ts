@@ -1,6 +1,7 @@
 import Wire from './Wire';
 import Torrent from './Torrent';
 import net from 'net';
+import arrayRemove from 'unordered-array-remove';
 const debug = require('debug')('peer');
 
 const CONNECT_TIMEOUT_TCP = 5000;
@@ -123,6 +124,14 @@ export default class Peer {
     this.conn = null;
     this.wire = null;
 
+    if(swarm && wire) {
+      arrayRemove(swarm.wires, swarm.wires.indexOf(wire));
+    }
+
+    if(conn) {
+      conn.on('error', () => {});
+      conn.destroy();
+    }
     if(wire) wire.destroy();
     if(swarm) swarm.removePeer(this.id);
   }
