@@ -4,7 +4,9 @@ import parallel from 'run-parallel';
 import randombytes from 'randombytes';
 
 const debug = require('debug')('client');
-const { version: VERSION } = require('../../package.json');
+// 빌드후 경로 차이로 인해 프로세스 환경변수 참조로 변경 - 231210
+// const { version: VERSION } = require('package.json');
+const VERSION = process.env.npm_package_version;
 
 /**
  * Version number in Azureus-style. Generated from major and minor semver version.
@@ -13,7 +15,7 @@ const { version: VERSION } = require('../../package.json');
  *   '1.2.5' -> '0102'
  */
 const VERSION_STR = VERSION
-  .replace(/\d*./g, v => `0${v % 100}`.slice(-2))
+  .replace(/\d*./g, v => `0${parseInt(v) % 100}`.slice(-2))
   .slice(0, 4)
 
 /**
