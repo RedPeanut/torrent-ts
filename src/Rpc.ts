@@ -6,7 +6,7 @@
 // const debug = require('debug')('k-rpc');
 // debug.log = console.log.bind(console);
 import Socket from './Socket';
-import { KBucket } from './KBucket';
+import KBucket from './KBucket';
 import { EventEmitter } from 'events';
 import randombytes from 'randombytes';
 import { Contact,

@@ -4,7 +4,7 @@ interface Options {
   timeout;
 }
 
-class Session extends EventEmitter {
+export default class Session extends EventEmitter {
 
   timeout;
 
@@ -27,4 +27,3 @@ class Session extends EventEmitter {
   }
 
 }
-module.exports = Session;

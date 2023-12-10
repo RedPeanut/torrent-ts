@@ -1,2 +1,13 @@
+import Client from './Client';
+import DHT from './DHT';
+import KBucket from './KBucket';
+import Rpc from './Rpc';
+import Session from './Session';
+import Torrent from './Torrent';
+import Util from './Util';
 import Cmd from './Cmd';
-new Cmd().exec();
+import Discovery from './Discovery';
+import Peer from './Peer';
+import Sample from './Sample';
+import Socket from './Socket';
+import Wire from './Wire';

@@ -85,7 +85,7 @@ interface Options {
  *
  * @extends EventEmitter
  */
-export class KBucket extends EventEmitter {
+export default class KBucket extends EventEmitter {
 
   localNodeId;
   numberOfNodesPerKBucket;
@@ -488,5 +488,3 @@ export class KBucket extends EventEmitter {
     this.emit('updated', incumbent, selection)
   }
 }
-
-// module.exports = KBucket

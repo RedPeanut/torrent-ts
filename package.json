@@ -1,14 +1,14 @@
 {
-  "name": "k-rpc-ts",
+  "name": "torrent-ts",
   "version": "0.0.1",
   "description": "",
   "type": "commonjs",
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "main": "build/src/index.js",
+  "bin": { "torrent-ts": "build/src/bin.js" },
   "scripts": {
-    "start": "npm run build && node build/src/index.js",
+    "start": "npm run build && node build/src/bin.js",
     "clean": "rimraf build",
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w -p tsconfig.json",
