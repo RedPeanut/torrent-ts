@@ -175,5 +175,3 @@ export default class Cmd {
   }
 
 }
-
-// new Cmd().exec();

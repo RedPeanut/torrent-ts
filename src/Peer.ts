@@ -47,7 +47,7 @@ export default class Peer {
     this.connected = true;
 
     debug('Peer %s connected', this.id);
-    const conn = this.conn
+    const conn = this.conn;
     conn.once('end', () => {
       this.destroy(null);
     });
