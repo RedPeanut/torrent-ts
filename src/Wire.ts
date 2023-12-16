@@ -192,6 +192,7 @@ export default class Wire extends stream.Duplex {
    * Duplex stream method. Called whenever the remote peer has data for us.
    */
   _write(data, encoding, cb) {
+    this._debug('_write() is called...');
     this._bufferSize += data.length;
     this._buffer.push(data);
     if(this._buffer.length > 1)
