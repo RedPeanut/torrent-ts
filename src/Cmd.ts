@@ -91,14 +91,11 @@ export default class Cmd {
    * @param _argv 
    */
   init(_argv: object) {
-    debug('init() is called...');
-    debug(_argv);
-    // console.log(typeof(_argv));
+    console.log(_argv);
     this.argv = _argv;
   }
   
   processInputs(inputs, fn) {
-    debug('processInputs() is called...');
     if(Array.isArray(inputs) && inputs.length !== 0) {
       inputs.forEach(input => fn(input));
     } else {

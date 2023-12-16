@@ -84,7 +84,7 @@ export default class Peer {
   connectTimeout: NodeJS.Timeout|string|number = null;
   handshakeTimeout: NodeJS.Timeout|string|number = null;
   
-  startConnectTimeout () {
+  startConnectTimeout() {
     clearTimeout(this.connectTimeout);
 
     const connectTimeoutValues = {
