@@ -11,6 +11,7 @@
       "env": {
         "DEBUG": "*",
         "NODE_ENV": "development",
+        "npm_package_version": "0.0.1",
       },
       "preLaunchTask": "tsc: build - tsconfig.json",
       "program": "build/src/bin.js",
