@@ -32,6 +32,8 @@ export default class Peer {
   connected: boolean = false;
   destroyed: boolean = false;
 
+  sentHandshake = false;
+
   /**
    * 
    * @param {string} id 
@@ -48,6 +50,9 @@ export default class Peer {
     this.connected = true;
 
     debug('Peer %s connected', this.id);
+
+    clearTimeout(this.connectTimeout);
+
     const conn = this.conn;
     conn.once('end', () => {
       this.destroy(null);
@@ -63,11 +68,29 @@ export default class Peer {
     });
 
     const wire = this.wire = new Wire(this.type);
+
+    wire.once('end', () => {
+      this.destroy(null);
+    });
+    wire.once('close', () => {
+      this.destroy(null);
+    });
+    wire.once('finish', () => {
+      this.destroy(null);
+    });
+    wire.once('error', err => {
+      this.destroy(err);
+    });
+
     wire.once('handshake', (infoHash, peerId) => {
+      this._debug('handshake are successed %s %s', this.type, this.id);
       this.onHandshake(infoHash, peerId)
     });
     this.startHandshakeTimeout();
-    this.handshake();
+    if(this.swarm) {
+      if(!this.sentHandshake)
+        this.handshake();
+    }
   }
 
   /**
@@ -78,7 +101,12 @@ export default class Peer {
   onHandshake(infoHash: string, peerId: string) {
     clearTimeout(this.handshakeTimeout);
     let addr = this.addr;
-    this.swarm._onWire(this.wire, addr);
+    // this.swarm._onWire(this.wire, addr);
+  }
+
+  _debug(...args) {
+    args[0] = `[${this.id}] ${args[0]}`;
+    debug(...args);
   }
 
   connectTimeout: NodeJS.Timeout|string|number = null;
@@ -124,9 +152,9 @@ export default class Peer {
     this.conn = null;
     this.wire = null;
 
-    if(swarm && wire) {
+    /* if(swarm && wire) {
       arrayRemove(swarm.wires, swarm.wires.indexOf(wire));
-    }
+    } */
 
     if(conn) {
       conn.on('error', () => {});
@@ -137,7 +165,8 @@ export default class Peer {
   }
 
   handshake() {
-    // this.wire.handshake(this.swarm.infoHash, this.swarm.client.peerId);
+    this.wire.handshake(this.swarm.infoHash, this.swarm.client.peerId);
+    this.sentHandshake = true;
   }
 
 }

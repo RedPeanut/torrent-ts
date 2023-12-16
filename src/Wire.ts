@@ -171,8 +171,9 @@ export default class Wire extends stream.Duplex {
       throw new Error('infoHash and peerId MUST have length 20');
     }
 
-    const reserved = Buffer.from(MESSAGE_RESERVED);
+    this._debug('handshake i=%s p=%s exts=', infoHash, peerId);
 
+    const reserved = Buffer.from(MESSAGE_RESERVED);
     this._push(Buffer.concat([MESSAGE_PROTOCOL, reserved, infoHashBuffer, peerIdBuffer]));
     this._handshakeSent = true;
   }
@@ -212,6 +213,12 @@ export default class Wire extends stream.Duplex {
 
     cb(null); // Signal that we're ready for more data
   }
+
+  /**
+   * Duplex stream method. Called whenever the remote peer stream wants data. No-op
+   * since we'll just push data whenever we get it.
+   */
+  _read() {}
 
   /**
    * 

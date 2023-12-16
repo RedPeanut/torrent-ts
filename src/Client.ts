@@ -42,7 +42,7 @@ export default class Client {
   _debugId: string;
 
   constructor(opts: Options) {
-    this._debugId = this.peerId = Buffer.from(VERSION_PREFIX + randombytes(9).toString('base64')).toString();
+    this._debugId = this.peerId = Buffer.from(VERSION_PREFIX + randombytes(9).toString('base64')).toString('hex');
     this.dht = new DHT({});
   }
 
